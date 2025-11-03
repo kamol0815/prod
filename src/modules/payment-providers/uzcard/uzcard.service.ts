@@ -17,6 +17,7 @@ import {
   Plan,
 } from '../../../shared/database/models/plans.model';
 import { UserModel } from '../../../shared/database/models/user.model';
+import mongoose from 'mongoose';
 import {
   CardType,
   UserCardsModel,
@@ -291,9 +292,20 @@ export class UzCardApiService {
       const balance = card.balance;
       const expireDate = card.expireDate;
 
-      const user = await UserModel.findOne({
-        _id: request.userId,
-      });
+      // Convert userId to ObjectId if it's a string
+      let userObjectId;
+      if (mongoose.Types.ObjectId.isValid(request.userId)) {
+        userObjectId = new mongoose.Types.ObjectId(request.userId);
+      } else {
+        logger.error(`Invalid userId format: ${request.userId}`);
+        return {
+          success: false,
+          errorCode: 'invalid_user_id',
+          message: "Noto'g'ri foydalanuvchi ID formati.",
+        };
+      }
+
+      const user = await UserModel.findById(userObjectId);
       if (!user) {
         logger.error(`User not found for ID: ${request.userId}`);
         return {
@@ -694,7 +706,16 @@ export class UzCardApiService {
     selectedService: string,
     plan: IPlanDocument,
   ): Promise<void> {
-    const user = await UserModel.findById(userId);
+    // Convert userId to ObjectId if it's a string
+    let userObjectId;
+    if (mongoose.Types.ObjectId.isValid(userId)) {
+      userObjectId = new mongoose.Types.ObjectId(userId);
+    } else {
+      logger.error(`Invalid userId format in handleSuccessfulPayment: ${userId}`);
+      throw new Error('Invalid user ID format');
+    }
+
+    const user = await UserModel.findById(userObjectId);
     if (!user) {
       logger.error(`User not found for ID: ${userId}`);
       throw new Error('User not found');
