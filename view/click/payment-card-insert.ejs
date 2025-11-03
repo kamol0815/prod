@@ -1,0 +1,334 @@
+<!-- payment-card-insert.ejs -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Click Payment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141414;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #302d2d;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input::placeholder {
+            color: #777;
+        }
+
+        input:focus {
+            border-color: #0f8fee;
+            outline: none;
+        }
+
+        .card-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .card-row .form-group:first-child {
+            flex: 2;
+        }
+
+        .card-row .form-group:last-child {
+            flex: 1;
+        }
+
+        button {
+            background-color: #0f8fee;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0d7dd4;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .card-icon {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            color: #999;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #aaa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" fill="none">
+                    <g clip-path="url(#clip0_533_1171)">
+                        <g clip-path="url(#clip1_533_1171)">
+                            <path
+                                d="M140.667 0H132.667V40H140.667V28.2L150.5 40H160L147.667 25L157.333 13.3333H148L140.667 22.1839V0Z"
+                                fill="white"></path>
+                            <path
+                                d="M129.701 29.0417C128.378 35.3018 122.821 40 116.167 40C108.527 40 102.333 33.8066 102.333 26.1667C102.333 18.5267 108.527 12.3333 116.167 12.3333C122.85 12.3333 128.427 17.0733 129.718 23.375H121.493C120.56 21.1105 118.535 19.5417 116.188 19.5417C112.954 19.5417 110.333 22.5171 110.333 26.1875C110.333 29.8579 112.954 32.8333 116.188 32.8333C118.521 32.8333 120.535 31.2837 121.476 29.0417H129.701Z"
+                                fill="white"></path>
+                            <path
+                                d="M95 10C97.7614 10 100 7.76142 100 5C100 2.23858 97.7614 0 95 0C92.2386 0 90 2.23858 90 5C90 7.76142 92.2386 10 95 10Z"
+                                fill="white"></path>
+                            <path d="M99 40V13.3333H91V40H99Z" fill="white"></path>
+                            <rect x="78.3333" width="8" height="40" fill="white"></rect>
+                            <path
+                                d="M75.3675 29.0417C74.0443 35.3018 68.4875 40 61.8333 40C54.1934 40 48 33.8066 48 26.1667C48 18.5267 54.1934 12.3333 61.8333 12.3333C68.5169 12.3333 74.0935 17.0733 75.3849 23.375H67.1598C66.2267 21.1105 64.2018 19.5417 61.8542 19.5417C58.621 19.5417 56 22.5171 56 26.1875C56 29.8579 58.621 32.8333 61.8542 32.8333C64.1874 32.8333 66.2018 31.2837 67.1425 29.0417H75.3675Z"
+                                fill="white"></path>
+                        </g>
+                        <g clip-path="url(#clip2_533_1171)">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M40 20C40 27.6667 27.6667 40 20 40C12.3333 40 0 27.6667 0 20C0 12.3333 12.3333 0 20 0C27.6667 0 40 12.3333 40 20ZM28 20C28 23 23 28 20 28C17 28 12 23 12 20C12 17 17 12 20 12C23 12 28 17 28 20Z"
+                                fill="#0077FF"></path>
+                        </g>
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_533_1171">
+                            <rect width="160" height="40" fill="white"></rect>
+                        </clipPath>
+                        <clipPath id="clip1_533_1171">
+                            <rect width="112" height="40" fill="white" transform="translate(48)"></rect>
+                        </clipPath>
+                        <clipPath id="clip2_533_1171">
+                            <rect width="40" height="40" fill="white"></rect>
+                        </clipPath>
+                    </defs>
+                </svg>
+            </div>
+
+            <h1>Yulduzlar bashorati</h1>
+        </div>
+
+        <form id="cardForm">
+            <div class="form-group">
+                <label for="cardNumber">Karta Raqam</label>
+                <div class="relative">
+                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19"
+                        inputmode="numeric" pattern="[0-9 ]*">
+                </div>
+                <div class="error" id="cardNumberError">Iltimos to'g'ri karta raqam kiriting</div>
+            </div>
+
+            <div class="card-row">
+                <div class="form-group">
+                    <label for="expireDate">Amal qilish muddati</label>
+                    <input type="text" id="expireDate" placeholder="MM/YY" maxlength="5" inputmode="numeric"
+                        pattern="[0-9/]*">
+                    <div class="error" id="expireDateError">Iltimos amal qilish muddatini to'g'ri kiriting</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" id="submitBtn">Yuborish</button>
+            </div>
+        </form>
+
+        <div class="footer">
+        </div>
+    </div>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Card number formatting
+            const urlParams = new URLSearchParams(window.location.search);
+
+            const userId = urlParams.get('userId');
+            const planId = urlParams.get('planId');
+            const selectedService = urlParams.get('selectedService');
+            // const telegramId = urlParams.get('telegramId');
+
+
+            console.log(`UserId is: ${userId}`);
+            // console.log(`PlanId is: ${planId}`);
+            // console.log(`TelegramId is: ${telegramId}`);
+
+            const cardInput = document.getElementById('cardNumber');
+
+
+            cardInput.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+                }
+                e.target.value = value;
+            });
+
+            // Expiry date formatting
+            const expiryInput = document.getElementById('expireDate');
+            expiryInput.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+
+            // Form submission
+            // Form submission
+            const form = document.getElementById('cardForm');
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Reset errors
+                document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+
+                // Get values
+                const cardNumber = cardInput.value.replace(/\s/g, '');
+                const expireDate = expiryInput.value.replace('/', '');
+
+                let isValid = true;
+
+                // Basic validation
+                if (!/^\d{16}$/.test(cardNumber)) {
+                    document.getElementById('cardNumberError').style.display = 'block';
+                    isValid = false;
+                }
+
+                if (!/^\d{4}$/.test(expireDate)) {
+                    document.getElementById('expireDateError').style.display = 'block';
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    // Show loading state
+                    const submitBtn = document.getElementById('submitBtn');
+                    const originalBtnText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Processing...';
+
+                    try {
+                        // Format for API - convert MM/YY to MMYY
+                        const formattedExpiry = expireDate;
+
+                        // Call API to create card token
+                        const requestData = {
+                            card_number: cardNumber,
+                            expire_date: formattedExpiry,
+                            temporary: 0,
+                            userId: userId,
+                            planId: planId,
+                            // selectedService: selectedService
+                            // telegramId: telegramId
+                        };
+
+                        // In a real implementation, you would send this data to the Click API
+                        // Replace this with your actual API call
+                        const response = await fetch('create-card-token', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestData)
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            // Assuming the API returns a token and a phone number
+                            const token = data.token;
+                            const phone = data.incompletePhoneNumber;
+
+                            // Redirect to SMS verification page
+                            const phoneQuery = phone ? `&phone=${encodeURIComponent(phone)}` : '';
+                            window.location.href = `verify-sms?token=${token}&userId=${userId}&expireDate=${formattedExpiry}&planId=${planId}&selectedService=${selectedService}${phoneQuery}`;
+                        } else {
+                            throw new Error('Failed to create card token');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        // Show error message to user
+                        alert('There was an error processing your card. Please try again.');
+
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalBtnText;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

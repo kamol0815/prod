@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SMS Verification | UzCard Payment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #141414;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #302d2d;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 450px;
+      padding: 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header .logo {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .header .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+    }
+
+    .header h1 {
+      color: #ffffff;
+      font-size: 24px;
+      margin: 0 0 10px;
+    }
+
+    .header p {
+      color: #aaa;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+      text-align: center;
+      letter-spacing: 4px;
+      font-weight: bold;
+    }
+
+    input::placeholder {
+      color: #777;
+    }
+
+    input:focus {
+      border-color: #004B93;
+      outline: none;
+    }
+
+    button {
+      background-color: #004B93;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #003670;
+    }
+
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .global-error {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+      padding: 10px;
+      background-color: rgba(255, 107, 107, 0.1);
+      border-radius: 6px;
+      display: none;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .timer {
+      text-align: center;
+      margin: 15px 0;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .resend {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .resend a {
+      color: #004B93;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .resend a:hover {
+      text-decoration: underline;
+    }
+
+    .resend.disabled a {
+      color: #666;
+      cursor: default;
+      text-decoration: none;
+    }
+
+    .powered-by {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    .offer-link {
+      color: #004B93;
+      text-decoration: none;
+    }
+
+    .offer-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <img src="/img.png" alt="Yulduzlar bashorati Logo">
+      </div>
+      <h1>Yulduzlar bashorati</h1>
+      <p><span id="phoneNumber">+998 ** *** 4567</span> raqamiga yuborilgan SMS kodni kiriting</p>
+    </div>
+
+    <div class="global-error" id="globalError"></div>
+
+    <form id="smsForm">
+      <div class="form-group">
+        <label for="smsCode">Tasdiqlsh kodi</label>
+        <input type="text" id="smsCode" placeholder="Enter code" maxlength="6" inputmode="numeric" pattern="[0-9 ]*">
+        <div class="error" id="smsError">Tasdiqlash kodi to'g'ri kiritilmadi</div>
+      </div>
+
+      <div class="timer" id="timer">Code will expire in <span id="countdown">01:00</span></div>
+
+      <div class="form-group">
+        <button type="submit" id="verifyBtn">Tasdiqlash</button>
+      </div>
+    </form>
+
+    <div class="resend disabled" id="resendContainer">
+      <a id="resendLink">Qayta yuborish</a>
+    </div>
+
+    <div class="footer"></div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const session = urlParams.get('session');
+      const phoneNumber = urlParams.get('phone');
+      const userId = urlParams.get('userId');
+      const planId = urlParams.get('planId');
+      const selectedService = urlParams.get('selectedService');
+
+      // Display masked phone number
+      if (phoneNumber) {
+        document.getElementById('phoneNumber').textContent = phoneNumber;
+      }
+
+      // SMS input formatting - numbers only
+      const smsInput = document.getElementById('smsCode');
+      smsInput.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+      });
+
+      // Countdown timer
+      let timeLeft = 60; // 1 minute
+      const countdownEl = document.getElementById('countdown');
+      const resendContainer = document.getElementById('resendContainer');
+
+      // Initially disable the resend button
+      resendContainer.classList.add('disabled');
+
+      const countdownTimer = setInterval(() => {
+        timeLeft--;
+
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownTimer);
+          document.getElementById('timer').textContent = 'Code has expired';
+          resendContainer.classList.remove('disabled');
+        }
+      }, 1000);
+
+      // Debug function
+      function debugLog(message) {
+        console.log(`[DEBUG] ${message}`);
+      }
+
+      // Show global error
+      function showGlobalError(message) {
+        const errorEl = document.getElementById('globalError');
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+      }
+
+      // Hide global error
+      function hideGlobalError() {
+        document.getElementById('globalError').style.display = 'none';
+      }
+
+      // Resend code functionality
+      const resendLink = document.getElementById('resendLink');
+      resendLink.addEventListener('click', async function (e) {
+        debugLog('Resend link clicked');
+
+        if (resendContainer.classList.contains('disabled')) {
+          debugLog('Resend is disabled, returning early');
+          return;
+        }
+
+        debugLog('Proceeding with resend code logic');
+
+        // Reset timer
+        timeLeft = 60;
+        countdownEl.textContent = '01:00';
+        document.getElementById('timer').innerHTML = 'Code will expire in <span id="countdown">01:00</span>';
+        resendContainer.classList.add('disabled');
+
+        // Restart countdown
+        clearInterval(countdownTimer);
+        const newCountdown = setInterval(() => {
+          timeLeft--;
+
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+
+          document.getElementById('countdown').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+          if (timeLeft <= 0) {
+            clearInterval(newCountdown);
+            document.getElementById('timer').textContent = 'Code has expired';
+            resendContainer.classList.remove('disabled');
+          }
+        }, 1000);
+
+        try {
+
+          const queryParams = new URLSearchParams({
+            session: session,
+            userId: userId
+          });
+
+          const response = await fetch(`resend-otp?${queryParams.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const data = await response.json();
+
+          if (data && !data.success) {
+            debugLog(`Error resending code: ${data.error?.message || 'Unknown error'}`);
+            showGlobalError(data.error?.message || 'Failed to resend code. Please try again.');
+          } else {
+          }
+        } catch (error) {
+          console.error('Error resending SMS:', error);
+          showGlobalError('Failed to resend code. Please try again.');
+        }
+
+        // Clear SMS input
+        smsInput.value = '';
+        hideGlobalError();
+        document.getElementById('smsError').style.display = 'none';
+      });
+
+      // Form submission
+      const form = document.getElementById('smsForm');
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Reset errors
+        document.getElementById('smsError').style.display = 'none';
+        hideGlobalError();
+
+        // Get values
+        const smsCode = smsInput.value;
+
+        // Basic validation
+        if (!/^\d{6}$/.test(smsCode)) {
+          document.getElementById('smsError').style.display = 'block';
+          return;
+        }
+
+        // Disable button during processing
+        const verifyBtn = document.getElementById('verifyBtn');
+        const originalBtnText = verifyBtn.textContent;
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = 'Processing...';
+
+        try {
+          // Prepare request data
+          const requestData = {
+            session: session,
+            otp: smsCode,
+            userId: userId,
+            planId: planId,
+            selectedService: selectedService
+          };
+
+          // Call API to verify OTP
+          const response = await fetch('confirm-card', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Handle successful verification
+            const footer = document.querySelector('.footer');
+            footer.innerHTML = `
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="https://t.me/Yulduz_bashorati_bot" target="_blank"
+           style="
+               display: inline-block;
+               background-color: #28a745;
+               color: white;
+               padding: 16px 32px;
+               font-size: 18px;
+               border-radius: 8px;
+               font-weight: 700;
+               text-decoration: none;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s ease, transform 0.2s ease;
+           "
+           onmouseover="this.style.backgroundColor='#218838'; this.style.transform='scale(1.05)'"
+           onmouseout="this.style.backgroundColor='#28a745'; this.style.transform='scale(1)'"
+        >
+            Premium Botga o'tish
+        </a>
+    </div>
+`;
+
+            // Optional: hide form
+            document.getElementById('smsForm').style.display = 'none'; // Redirect to Telegram bot
+          } else {
+            // Handle specific error codes
+            switch (data.errorCode) {
+              case '-137':
+                document.getElementById('smsError').textContent = data.message || 'Tasdiqlash kodi noto\'g\'ri.';
+                document.getElementById('smsError').style.display = 'block';
+                break;
+              case '-113':
+                document.getElementById('smsError').textContent = data.message || 'Tasdiqlash kodi muddati o\'tgan. Qayta yuborish tugmasidan foydalaning.';
+                document.getElementById('smsError').style.display = 'block';
+                resendContainer.classList.remove('disabled');
+                break;
+              default:
+                showGlobalError(data.message || 'Kutilmagan xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
+            }
+
+            // Reset button state
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = originalBtnText;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          // Show error message to user
+          showGlobalError('Serverda xatolik yuz berdi. Iltimos qaytadan urinib ko\'ring.');
+
+          // Reset button state
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = originalBtnText;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

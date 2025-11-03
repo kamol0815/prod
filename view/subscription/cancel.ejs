@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obunani bekor qilish</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f4f6;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+      max-width: 420px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #111827;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1f2937;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      margin-bottom: 1.25rem;
+      box-sizing: border-box;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+    }
+
+    .helper {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: -0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .notice {
+      font-size: 0.85rem;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+    }
+
+    .alert.success {
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .alert.error {
+      background: rgba(248, 113, 113, 0.12);
+      color: #b91c1c;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+        align-items: flex-start;
+      }
+
+      .card {
+        margin-top: 32px;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Obunani bekor qilish</h1>
+
+    <% if (status === 'success') { %>
+      <div class="alert success"><%= message %></div>
+    <% } else if (status === 'error') { %>
+      <div class="alert error"><%= message %></div>
+    <% } %>
+
+    <form method="post" action="<%= token ? '/api/subscription/cancel?token=' + encodeURIComponent(token) : '/api/subscription/cancel' %>" autocomplete="off">
+      <input
+        id="telegramId"
+        name="telegramId"
+        type="hidden"
+        value="<%= form.telegramId ? form.telegramId : '' %>"
+      />
+
+      <button type="submit">Obunani bekor qilish</button>
+    </form>
+
+    <p class="notice">
+      Bekor qilish yakunlangandan soʻng karta maʼlumotlari tizimdan oʻchirib tashlanadi va avtomatik toʻlovlar toʻxtatiladi.
+    </p>
+  </main>
+</body>
+</html>

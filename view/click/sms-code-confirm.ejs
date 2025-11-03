@@ -1,0 +1,463 @@
+<!-- sms-code-confirm.ejs -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SMS Verification | Click Payment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141414;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #302d2d;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 24px;
+            margin: 0 0 10px;
+        }
+
+        .header p {
+            color: #aaa;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            text-align: center;
+            letter-spacing: 4px;
+            font-weight: bold;
+        }
+
+        input::placeholder {
+            color: #777;
+        }
+
+        input:focus {
+            border-color: #0f8fee;
+            outline: none;
+        }
+
+        button {
+            background-color: #0f8fee;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0d7dd4;
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #4ade80;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .timer {
+            text-align: center;
+            margin: 15px 0;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .resend {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .resend a {
+            color: #0f8fee;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .resend a:hover {
+            text-decoration: underline;
+        }
+
+        .resend.disabled a {
+            color: #666;
+            cursor: default;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40" fill="none">
+                    <g clip-path="url(#clip0_533_1171)">
+                        <g clip-path="url(#clip1_533_1171)">
+                            <path
+                                d="M140.667 0H132.667V40H140.667V28.2L150.5 40H160L147.667 25L157.333 13.3333H148L140.667 22.1839V0Z"
+                                fill="white"></path>
+                            <path
+                                d="M129.701 29.0417C128.378 35.3018 122.821 40 116.167 40C108.527 40 102.333 33.8066 102.333 26.1667C102.333 18.5267 108.527 12.3333 116.167 12.3333C122.85 12.3333 128.427 17.0733 129.718 23.375H121.493C120.56 21.1105 118.535 19.5417 116.188 19.5417C112.954 19.5417 110.333 22.5171 110.333 26.1875C110.333 29.8579 112.954 32.8333 116.188 32.8333C118.521 32.8333 120.535 31.2837 121.476 29.0417H129.701Z"
+                                fill="white"></path>
+                            <path
+                                d="M95 10C97.7614 10 100 7.76142 100 5C100 2.23858 97.7614 0 95 0C92.2386 0 90 2.23858 90 5C90 7.76142 92.2386 10 95 10Z"
+                                fill="white"></path>
+                            <path d="M99 40V13.3333H91V40H99Z" fill="white"></path>
+                            <rect x="78.3333" width="8" height="40" fill="white"></rect>
+                            <path
+                                d="M75.3675 29.0417C74.0443 35.3018 68.4875 40 61.8333 40C54.1934 40 48 33.8066 48 26.1667C48 18.5267 54.1934 12.3333 61.8333 12.3333C68.5169 12.3333 74.0935 17.0733 75.3849 23.375H67.1598C66.2267 21.1105 64.2018 19.5417 61.8542 19.5417C58.621 19.5417 56 22.5171 56 26.1875C56 29.8579 58.621 32.8333 61.8542 32.8333C64.1874 32.8333 66.2018 31.2837 67.1425 29.0417H75.3675Z"
+                                fill="white"></path>
+                        </g>
+                        <g clip-path="url(#clip2_533_1171)">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M40 20C40 27.6667 27.6667 40 20 40C12.3333 40 0 27.6667 0 20C0 12.3333 12.3333 0 20 0C27.6667 0 40 12.3333 40 20ZM28 20C28 23 23 28 20 28C17 28 12 23 12 20C12 17 17 12 20 12C23 12 28 17 28 20Z"
+                                fill="#0077FF"></path>
+                        </g>
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_533_1171">
+                            <rect width="160" height="40" fill="white"></rect>
+                        </clipPath>
+                        <clipPath id="clip1_533_1171">
+                            <rect width="112" height="40" fill="white" transform="translate(48)"></rect>
+                        </clipPath>
+                        <clipPath id="clip2_533_1171">
+                            <rect width="40" height="40" fill="white"></rect>
+                        </clipPath>
+                    </defs>
+                </svg>
+            </div>
+            <h1>SMS Verification</h1>
+            <p><span id="phoneNumber">
+                    <%= phone || '+998 ** *** 4567' %>
+                </span> raqamiga yuborilgan SMS kodni kiriting</p>
+        </div>
+
+        <form id="smsForm">
+            <div class="form-group">
+                <label for="smsCode">Tasdiqlsh kodi</label>
+                <input type="text" id="smsCode" placeholder="Enter code" maxlength="6" inputmode="numeric"
+                    pattern="[0-9 ]*">
+                <div class="error" id="smsError">Tasdiqlash kodi to'g'ri kiritilmadi</div>
+            </div>
+
+            <div class="timer" id="timer">Code will expire in <span id="countdown">01:00</span></div>
+
+            <div class="form-group">
+                <button type="submit" id="verifyBtn">Tasdiqlash</button>
+            </div>
+        </form>
+
+        <div class="resend disabled" id="resendContainer">
+            <a id="resendLink">Resend Code</a>
+        </div>
+
+        <div class="footer">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardToken = urlParams.get('token');
+            const phoneNumber = urlParams.get('phone');
+            const userId = urlParams.get('userId');
+            const planId = urlParams.get('planId');
+            const selectedService = urlParams.get('selectedService');
+
+
+            // Display masked phone number
+            if (phoneNumber) {
+                const formatPhoneForDisplay = (raw) => {
+                    if (!raw) return null;
+
+                    const digitsOnly = raw.replace(/\D/g, '');
+                    if (digitsOnly.length < 4) {
+                        return raw;
+                    }
+
+                    const lastFour = digitsOnly.slice(-4);
+                    const prefixDigitsCount = digitsOnly.length > 9 ? digitsOnly.length - 9 : 0;
+                    const countryCode = prefixDigitsCount ? digitsOnly.slice(0, prefixDigitsCount) : '';
+                    const localDigits = digitsOnly.slice(prefixDigitsCount, -4);
+                    const maskedLocal = localDigits.replace(/\d/g, '*');
+                    const shouldAddPlus = raw.trim().startsWith('+') || digitsOnly.startsWith('998');
+
+                    const localParts = [];
+                    if (maskedLocal.length > 0) {
+                        if (maskedLocal.length <= 3) {
+                            localParts.push(maskedLocal);
+                        } else if (maskedLocal.length <= 5) {
+                            localParts.push(maskedLocal.slice(0, 2));
+                            localParts.push(maskedLocal.slice(2));
+                        } else {
+                            localParts.push(maskedLocal.slice(0, 2));
+                            localParts.push(maskedLocal.slice(2, 5));
+                            const remaining = maskedLocal.slice(5);
+                            if (remaining) {
+                                localParts.push(remaining);
+                            }
+                        }
+                    }
+
+                    const parts = [];
+                    if (countryCode) {
+                        parts.push(`${shouldAddPlus ? '+' : ''}${countryCode}`);
+                    }
+                    if (localParts.length) {
+                        parts.push(localParts.join(' '));
+                    }
+                    parts.push(lastFour);
+
+                    return parts.join(' ').replace(/\s+/g, ' ').trim();
+                };
+
+                const maskedPhone = formatPhoneForDisplay(phoneNumber);
+                if (maskedPhone) {
+                    document.getElementById('phoneNumber').textContent = maskedPhone;
+                }
+            }
+
+            // SMS input formatting - numbers only
+            const smsInput = document.getElementById('smsCode');
+            smsInput.addEventListener('input', function (e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Countdown timer
+            let timeLeft = 60; // 1 minute (changed from 2 minutes)
+            const countdownEl = document.getElementById('countdown');
+            const resendContainer = document.getElementById('resendContainer');
+
+            const countdownTimer = setInterval(() => {
+                timeLeft--;
+
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('timer').textContent = 'Code has expired';
+                    resendContainer.classList.remove('disabled');
+                }
+            }, 1000);
+
+            // Resend code functionality
+            const resendLink = document.getElementById('resendLink');
+            resendLink.addEventListener('click', function (e) {
+                if (resendContainer.classList.contains('disabled')) {
+                    return;
+                }
+
+                // Reset timer
+                timeLeft = 60; // Changed from 120 to 60
+                countdownEl.textContent = '01:00'; // Changed from '02:00' to '01:00'
+                document.getElementById('timer').innerHTML = 'Code will expire in <span id="countdown">01:00</span>';
+                resendContainer.classList.add('disabled');
+
+                // Restart countdown
+                clearInterval(countdownTimer);
+                const newCountdown = setInterval(() => {
+                    timeLeft--;
+
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+
+                    countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(newCountdown);
+                        document.getElementById('timer').textContent = 'Code has expired';
+                        resendContainer.classList.remove('disabled');
+                    }
+                }, 1000);
+
+                // Clear SMS input
+                smsInput.value = '';
+            });
+
+            // Form submission
+            const form = document.getElementById('smsForm');
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Reset errors
+                document.getElementById('smsError').style.display = 'none';
+
+                // Get values
+                const smsCode = smsInput.value;
+
+                // Basic validation
+                if (!/^\d{6}$/.test(smsCode)) {
+                    document.getElementById('smsError').style.display = 'block';
+                    return;
+                }
+
+                // Disable button during processing
+                const verifyBtn = document.getElementById('verifyBtn');
+                verifyBtn.disabled = true;
+                verifyBtn.textContent = 'Processing...';
+
+                try {
+                    // Prepare request data
+                    const requestData = {
+                        card_token: cardToken, // From URL parameter
+                        sms_code: smsCode,
+                        userId: userId,
+                        planId: planId,
+                        selectedService: selectedService
+                    };
+
+                    // Call API to verify card token
+                    const response = await fetch('verify-card-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data?.success === true) {
+                        const headerParagraph = document.querySelector('.header p');
+                        const statusMessage = data.message || 'Tasdiqlash muvaffaqiyatli yakunlandi!';
+                        headerParagraph.textContent = statusMessage;
+
+                        const notice = document.createElement('div');
+                        notice.className = 'success';
+                        notice.style.display = 'block';
+                        notice.textContent = data.trialActivated === false
+                            ? "Tekin sinov allaqachon ishlatilgan. Obuna pullik rejimda faollashtirildi va to'lov amalga oshirildi."
+                            : "Kartangiz saqlandi va bepul sinov ishga tushirildi.";
+                        headerParagraph.after(notice);
+
+                        document.getElementById('timer').style.display = 'none';
+                        document.getElementById('resendContainer').style.display = 'none';
+
+                        // Show success message and button
+                        const footer = document.querySelector('.footer');
+                        footer.innerHTML = `
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="https://t.me/Yulduz_bashorati_bot" target="_blank"
+           style="
+               display: inline-block;
+               background-color: #28a745;
+               color: white;
+               padding: 16px 32px;
+               font-size: 18px;
+               border-radius: 8px;
+               font-weight: 700;
+               text-decoration: none;
+               box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+               transition: background-color 0.3s ease, transform 0.2s ease;
+           "
+           onmouseover="this.style.backgroundColor='#218838'; this.style.transform='scale(1.05)'"
+           onmouseout="this.style.backgroundColor='#28a745'; this.style.transform='scale(1)'"
+        >
+            Premium Botga o'tish
+        </a>
+    </div>
+`;
+
+                        // Hide form
+                        document.getElementById('smsForm').style.display = 'none';
+                    } else {
+                        const errorMessage = data?.message || 'Tasdiqlash muvaffaqiyatsiz yakunlandi. Iltimos qaytadan urinib ko‘ring.';
+                        throw new Error(errorMessage);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Show error message to user
+                    document.getElementById('smsError').textContent = error.message || 'Verification failed. Please try again.';
+                    document.getElementById('smsError').style.display = 'block';
+
+                    // Reset button state
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Tasdiqlash';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

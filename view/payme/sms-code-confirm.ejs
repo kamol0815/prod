@@ -1,0 +1,542 @@
+<!-- payme-sms-code-confirm.ejs -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SMS Verification | Payme</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 0 0 10px;
+        }
+
+        .header p {
+            color: #666;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            text-align: center;
+            letter-spacing: 4px;
+            font-weight: bold;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            border-color: #00b5a8;
+            outline: none;
+        }
+
+        button {
+            background-color: #00b5a8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #009b90;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .timer {
+            text-align: center;
+            margin: 15px 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .resend {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .resend a {
+            color: #00b5a8;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .resend a:hover {
+            text-decoration: underline;
+        }
+
+        .resend.disabled a {
+            color: #999;
+            cursor: default;
+            text-decoration: none;
+        }
+
+        .powered-by {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .offer-link {
+            color: #00b5a8;
+            text-decoration: none;
+        }
+
+        .offer-link:hover {
+            text-decoration: underline;
+        }
+
+        .redirect-options {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .redirect-btn {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #00b5a8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .redirect-btn:hover {
+            background-color: #009b90;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="160" height="50" viewBox="0 0 60 18">
+                    <g>
+                        <path fill="#00B5A8"
+                            d="M3.67,0h48.02c.55,0,1.03.22,1.3.66l4.79,7.77c.37.61.3,1.35-.22,1.96l-6.75,7.77c-.37.42-.85.67-1.39.67H1.53c-.95,0-1.63-.74-1.52-1.67L1.79,1.67c.11-.95.93-1.67,1.87-1.67" />
+                        <path fill="#FFFFFF"
+                            d="M32.32,13.32l.74-5.91c.5-.34,1.07-.61,1.55-.61.63,0,.94.47.84,1.28l-.65,5.25h2.28l.71-5.73.02-.16c.5-.34,1.08-.63,1.57-.63.63,0,.94.47.84,1.28l-.65,5.25h2.28l.71-5.73c.19-1.6-.63-2.57-2.1-2.57-1.02,0-2.1.58-2.82,1.11-.31-.71-.98-1.11-1.94-1.11s-1.87.47-2.6.95l.1-.73h-2.13l-1.02,8.07h2.28ZM45.78,8.54c.23-1.07,1-1.69,1.95-1.69s1.47.53,1.47,1.39c0,.1,0,.21-.01.31h-3.41ZM43.39,9.62c-.03,2.02,1.44,3.89,4.44,3.89,1.07,0,1.97-.21,2.78-.71l.16-1.9c-.66.4-1.66.68-2.53.68-1.15,0-2.18-.5-2.47-1.66h5.58c.08-.21.15-.71.15-1.19,0-2.13-1.18-3.68-3.6-3.68s-4.47,1.44-4.5,4.58M15.68,10.96c0-.87,1.02-1.2,2.07-1.2h1.07l-.16,1.31c-.45.36-1.26.73-1.94.73-.61,0-1.03-.34-1.03-.84M13.4,11.14c-.02,1.31,1.05,2.37,2.68,2.37,1.15,0,1.99-.49,2.47-1.02l-.1.82h2.2l.53-4.37c.26-2.16-.45-3.92-3.23-3.92-1.13,0-2.5.26-3.24.74l-.23,1.81c.6-.32,1.76-.72,2.82-.72,1.28,0,1.73.64,1.68,1.31h-1.36c-1.97,0-4.21.76-4.23,2.97M7.09,11.35l.5-3.97c.49-.39,1.03-.55,1.52-.53.97.01,1.5.79,1.5,2,0,1.57-.82,2.91-2.21,2.91-.44,0-.94-.14-1.31-.4M4.27,15.98h2.26l.37-3.05c.36.27,1.02.58,1.86.58,2.62,0,4.21-2.31,4.21-4.83,0-2.15-1.02-3.65-2.92-3.65-.9,0-1.73.29-2.36.81l.08-.6h-2.19l-1.31,10.73ZM28.02,5.25l-2.45,5.58-1.28-5.58h-2.52l2.24,8.09-1.31,2.65h2.48l5.28-10.73h-2.45Z" />
+                    </g>
+                </svg>
+            </div>
+            <h1>SMS Verification</h1>
+            <p>Raqamingizga yuborilgan SMS kodni kiriting</p>
+        </div>
+
+        <form id="smsForm">
+            <div class="form-group">
+                <label for="smsCode">Tasdiqlsh kodi</label>
+                <input type="text" id="smsCode" placeholder="Enter code" maxlength="6" inputmode="numeric"
+                    pattern="[0-9 ]*">
+                <div class="error" id="smsError">Tasdiqlash kodi to'g'ri kiritilmadi</div>
+                <div class="success" id="smsSuccess">Verification successful! Redirecting...</div>
+            </div>
+
+            <div class="timer" id="timer">Code will expire in <span id="countdown">01:00</span></div>
+
+            <div class="form-group">
+                <button type="submit" id="verifyBtn">Tasdiqlash</button>
+            </div>
+        </form>
+
+        <div class="redirect-options" id="redirectOptions">
+            <p><strong>Verification successful!</strong></p>
+            <p>If you weren't redirected automatically, click below:</p> <a href="https://t.me/Yulduz_bashorati_bot"
+                class="redirect-btn" target="_blank">Open Telegram Bot</a>
+            <br>
+            <small style="margin-top: 10px; display: block; color: #666;">
+                Or copy this link: https://t.me/Yulduz_bashorati_bot
+            </small>
+        </div>
+
+        <div class="resend" id="resendContainer">
+            <a id="resendLink">Qayta yuborish</a>
+        </div>
+
+        <div class="powered-by">
+            <a href="https://payme.uz/terms" class="offer-link" target="_blank">Payme Offer</a> | Powered by Payme
+        </div>
+    </div>
+
+    <div class="footer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardToken = urlParams.get('token');
+            const userId = urlParams.get('userId');
+            const phone = urlParams.get('phone');
+            const planId = urlParams.get('planId');
+            const selectedService = urlParams.get('selectedService');
+
+            // Update phone number display if available
+            if (phone) {
+                document.querySelector('.header p').textContent = `Raqamingizga (${phone}) yuborilgan SMS kodni kiriting`;
+            }
+
+            // SMS input formatting - numbers only
+            const smsInput = document.getElementById('smsCode');
+            smsInput.addEventListener('input', function (e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Countdown timer
+            let timeLeft = 60; // 1 minute
+            const countdownEl = document.getElementById('countdown');
+            const resendContainer = document.getElementById('resendContainer');
+
+            // Initially enable the resend button for testing purposes
+            // In production, you might want to start with it disabled
+            resendContainer.classList.add('disabled');
+
+            const countdownTimer = setInterval(() => {
+                timeLeft--;
+
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('timer').textContent = 'Code has expired';
+                    resendContainer.classList.remove('disabled');
+                }
+            }, 1000);
+
+            // Debug function
+            function debugLog(message) {
+                console.log(`[DEBUG] ${message}`);
+            }
+
+            // Enhanced redirect function with fallbacks
+            function handleSuccessfulVerification() {
+                const telegramUrl = 'https://t.me/Yulduz_bashorati_bot';
+
+                // Show success message
+                document.getElementById('smsSuccess').style.display = 'block';
+                document.getElementById('smsError').style.display = 'none';
+
+                // Try multiple redirect approaches
+                let redirectAttempted = false;
+
+                // Method 1: Direct assignment (most compatible)
+                try {
+                    debugLog('Attempting direct window.location assignment');
+                    window.location.href = telegramUrl;
+                    redirectAttempted = true;
+                } catch (error) {
+                    debugLog('Direct assignment failed: ' + error.message);
+                }
+
+                // Method 2: Fallback after short delay
+                setTimeout(() => {
+                    if (!redirectAttempted) {
+                        try {
+                            debugLog('Attempting window.location.replace');
+                            window.location.replace(telegramUrl);
+                        } catch (error) {
+                            debugLog('Replace method failed: ' + error.message);
+                            showManualRedirectOptions();
+                        }
+                    }
+                }, 500);
+
+                // Method 3: Show manual options after longer delay
+                setTimeout(() => {
+                    showManualRedirectOptions();
+                }, 2000);
+            }
+
+            // Show manual redirect options
+            function showManualRedirectOptions() {
+                debugLog('Showing manual redirect options');
+                document.getElementById('redirectOptions').style.display = 'block';
+                document.getElementById('smsSuccess').textContent = 'Verification successful!';
+            }
+
+            // Resend code functionality
+            const resendLink = document.getElementById('resendLink');
+            resendLink.addEventListener('click', async function (e) {
+                debugLog('Resend link clicked');
+
+                if (resendContainer.classList.contains('disabled')) {
+                    debugLog('Resend is disabled, returning early');
+                    return;
+                }
+
+                debugLog('Proceeding with resend code logic');
+
+                // Reset timer
+                timeLeft = 60;
+                countdownEl.textContent = '01:00';
+                document.getElementById('timer').innerHTML = 'Code will expire in <span id="countdown">01:00</span>';
+                resendContainer.classList.add('disabled');
+
+                // Restart countdown
+                clearInterval(countdownTimer);
+                const newCountdown = setInterval(() => {
+                    timeLeft--;
+
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+
+                    document.getElementById('countdown').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(newCountdown);
+                        document.getElementById('timer').textContent = 'Code has expired';
+                        resendContainer.classList.remove('disabled');
+                    }
+                }, 1000);
+
+                try {
+                    debugLog('Making API call to resend-code');
+                    debugLog(`Parameters: token=${cardToken}, userId=${userId}`);
+
+                    const response = await fetch('resend-code', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: cardToken,
+                            userId: userId
+                        })
+                    });
+
+                    debugLog('API response received');
+                    const data = await response.json();
+                    debugLog(`API response data: ${JSON.stringify(data)}`);
+
+                    if (data && !data.success) {
+                        debugLog(`Error resending code: ${data.error?.message || 'Unknown error'}`);
+                        alert(data.error?.message || 'Failed to resend code. Please try again.');
+                    } else {
+                        debugLog('Code resent successfully');
+                    }
+                } catch (error) {
+                    debugLog(`Error in fetch: ${error.message}`);
+                    console.error('Error resending SMS:', error);
+                    alert('Failed to resend code. Please try again.');
+                }
+
+                // Clear SMS input
+                smsInput.value = '';
+            });
+
+            // Form submission
+            const form = document.getElementById('smsForm');
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Reset errors
+                document.getElementById('smsError').style.display = 'none';
+                document.getElementById('smsSuccess').style.display = 'none';
+                document.getElementById('redirectOptions').style.display = 'none';
+
+                // Get values
+                const smsCode = smsInput.value;
+
+                // Basic validation
+                if (!/^\d{6}$/.test(smsCode)) {
+                    document.getElementById('smsError').style.display = 'block';
+                    return;
+                }
+
+                // Disable button during processing
+                const verifyBtn = document.getElementById('verifyBtn');
+                verifyBtn.disabled = true;
+                verifyBtn.textContent = 'Processing...';
+
+                try {
+                    // Prepare request data
+                    const requestData = {
+                        token: cardToken,
+                        code: smsCode,
+                        userId: userId,
+                        planId: planId,
+                        selectedService: selectedService
+                    };
+
+                    // Call API to verify card token using your controller endpoint
+                    const response = await fetch('verify-token-payme', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const data = await response.json();
+                    console.log('Verification response:', data);
+
+                    if (data?.success === true) {
+                        const headerParagraph = document.querySelector('.header p');
+                        const statusMessage = data.message || 'Tasdiqlash muvaffaqiyatli yakunlandi!';
+                        headerParagraph.textContent = statusMessage;
+
+                        const notice = document.createElement('p');
+                        notice.className = 'success';
+                        notice.style.display = 'block';
+                        notice.textContent = data.trialActivated === false
+                            ? "Sizda bepul sinov muddati avval tugagan. Obuna pullik rejimda faollashtirildi va to'lov kartangizdan yechildi."
+                            : "Kartangiz saqlandi va 30 kunlik bepul sinov faollashtirildi.";
+                        headerParagraph.after(notice);
+
+                        // Hide the form first
+                        document.getElementById('smsForm').style.display = 'none';
+
+                        // Hide other elements
+                        document.getElementById('timer').style.display = 'none';
+                        document.getElementById('resendContainer').style.display = 'none';
+
+                        // Add the button in the form's place
+                        const formContainer = document.getElementById('smsForm').parentNode;
+                        const buttonDiv = document.createElement('div');
+                        buttonDiv.innerHTML = `
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="https://t.me/Yulduz_bashorati_bot" target="_blank"
+               style="
+                   display: inline-block;
+                   background-color: #00b5a8;
+                   color: white;
+                   padding: 16px 32px;
+                   font-size: 18px;
+                   border-radius: 8px;
+                   font-weight: 700;
+                   text-decoration: none;
+                   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                   transition: background-color 0.3s ease;
+               "
+               onmouseover="this.style.backgroundColor='#009b90'"
+               onmouseout="this.style.backgroundColor='#00b5a8'"
+            >
+                Premium Botga o'tish
+            </a>
+        </div>
+    `;
+
+                        formContainer.insertBefore(buttonDiv, document.getElementById('smsForm').nextSibling);
+                    } else {
+                        // Show specific error message from API
+                        const errorMessage = data?.message || data?.error?.message || 'Verification failed. Please try again.';
+                        document.getElementById('smsError').textContent = errorMessage;
+                        document.getElementById('smsError').style.display = 'block';
+
+                        // Reset button state
+                        verifyBtn.disabled = false;
+                        verifyBtn.textContent = 'Tasdiqlash';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Show error message to user
+                    document.getElementById('smsError').textContent = 'Verification failed. Please try again.';
+                    document.getElementById('smsError').style.display = 'block';
+
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Tasdiqlash';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
