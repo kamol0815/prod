@@ -45,6 +45,33 @@
       border-radius: 50%;
     }
 
+    .free-trial {
+      background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+      box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
     .header h1 {
       color: #ffffff;
       font-size: 24px;
@@ -157,6 +184,7 @@
     <div class="header">
       <div class="logo"> <img src="/img.png" alt="Yulduzlar bashorati Logo">
       </div>
+      <div class="free-trial">🎁 30 kun bepul</div>
       <h1>Yulduzlar bashorati</h1>
     </div>
 
