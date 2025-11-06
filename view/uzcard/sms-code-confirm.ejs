@@ -37,24 +37,33 @@
       margin-bottom: 20px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      gap: 15px;
       position: relative;
     }
 
     .header .logo img {
-      width: 120px;
-      height: 70px;
-      border-radius: 15px;
-      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.25);
+      height: 60px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
       transition: all 0.3s ease;
       border: 2px solid #ffffff;
       background: #ffffff;
-      padding: 8px;
+      padding: 6px;
       object-fit: contain;
     }
 
+    .header .logo .humo-logo {
+      width: 90px;
+    }
+
+    .header .logo .uzcard-logo {
+      width: 80px;
+    }
+
     .header .logo img:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.35);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
       border-color: #007BFF;
     }
 
@@ -218,7 +227,8 @@
   <div class="container">
     <div class="header">
       <div class="logo">
-        <img src="/image.png" alt="Humo Payment Logo" class="logo-image">
+        <img src="/HumoPay-Final-002.png" alt="HumoPay Logo" class="logo-image humo-logo">
+        <img src="/Uzcard_Logo_-3.png" alt="UzCard Logo" class="logo-image uzcard-logo">
       </div>
       <div class="promo-label">30 kun bepul</div>
       <h1>Yulduzlar bashorati</h1>
